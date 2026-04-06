@@ -39,7 +39,9 @@ Modelos: definición de entidades
 | TaskController | Manejo de requests      |
 | TaskRoutes     | Definición de endpoints |
 | Frontend       | Interfaz de usuario     |
+
 Mejoras Propuestas
+
 Implementar inyección de dependencias para desacoplar módulos
 Separar validaciones en una carpeta propia
 Usar DTOs para controlar entrada y salida de datos
