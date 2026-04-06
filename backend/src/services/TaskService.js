@@ -7,30 +7,57 @@ class TaskService {
     this.repo = taskRepository;
   }
 
-  // MALA PRACTICA: Validación duplicada
-  validateTask(title, desc) {
+  /**
+   * Valida que título y descripción no estén vacíos
+   * @param {string} title - Título de la tarea
+   * @param {string} description - Descripción de la tarea
+   * @throws {Error} Si el título o descripción están vacíos
+   */
+  validateTaskInput(title, description) {
     if (!title || title.trim() === '') {
-      return false;
-    }
-    if (!desc || desc.trim() === '') {
-      return false;
-    }
-    return true;
-  }
-
-  createNewTask(t, d) {
-    // Validación antigua
-    if (!t) {
       throw new Error('titulo vacio');
     }
-    if (!d) {
+    if (!description || description.trim() === '') {
       throw new Error('descripcion vacia');
     }
+  }
+
+  /**
+   * Obtiene una tarea por ID, lanzando error si no existe
+   * @param {string} id - ID de la tarea
+   * @returns {Task} La tarea encontrada
+   * @throws {Error} Si la tarea no existe
+   */
+  getTaskOrThrow(id) {
+    const task = this.repo.getTaskById(id);
+    if (!task) {
+      throw new Error('Tarea no encontrada');
+    }
+    return task;
+  }
+
+  /**
+   * Filtra tareas por estado
+   * @param {string} status - Estado a filtrar
+   * @returns {Array} Array de tareas con ese estado
+   */
+  getTasksByStatus(status) {
+    return this.repo.getAllTasks().filter(task => task.status === status);
+  }
+
+  /**
+   * Crea una nueva tarea
+   * @param {string} title - Título de la tarea
+   * @param {string} description - Descripción de la tarea
+   * @returns {Task} La tarea creada
+   */
+  createNewTask(title, description) {
+    this.validateTaskInput(title, description);
     
     const newTask = new Task(
       uuidv4(),
-      t,
-      d,
+      title,
+      description,
       'pending',
       new Date(),
       null
@@ -39,58 +66,57 @@ class TaskService {
     return this.repo.createTask(newTask);
   }
 
+  /**
+   * Obtiene todas las tareas
+   * @returns {Array} Array de todas las tareas
+   */
   obtenerTareas() {
     return this.repo.getAllTasks();
   }
 
+  /**
+   * Obtiene una tarea por ID
+   * @param {string} id - ID de la tarea
+   * @returns {Task|null} La tarea o null
+   */
   obtenerTareaPorId(id) {
     return this.repo.getTaskById(id);
   }
 
+  /**
+   * Marca una tarea como completada
+   * @param {string} id - ID de la tarea
+   * @returns {Task} La tarea actualizada
+   */
   completarTarea(id) {
-    const t = this.repo.getTaskById(id);
-    if (!t) {
-      throw new Error('Tarea no encontrada');
-    }
+    this.getTaskOrThrow(id);
     return this.repo.updateTask(id, { status: 'completed' });
   }
 
-  completarTareaConDetalles(taskId) {
-    const task = this.repo.getTaskById(taskId);
-    if (!task) {
-      throw new Error('Tarea no encontrada');
-    }
-    return this.repo.updateTask(taskId, { status: 'completed' });
-  }
-
+  /**
+   * Elimina una tarea
+   * @param {string} id - ID de la tarea
+   * @returns {boolean} true si se eliminó
+   */
   eliminarTarea(id) {
-    const t = this.repo.getTaskById(id);
-    if (!t) {
-      throw new Error('Tarea no encontrada');
-    }
+    this.getTaskOrThrow(id);
     return this.repo.deleteTask(id);
   }
 
+  /**
+   * Obtiene todas las tareas pendientes
+   * @returns {Array} Array de tareas pendientes
+   */
   obtenerTareasPendientes() {
-    const allTasks = this.repo.getAllTasks();
-    const pending = [];
-    for (let task of allTasks) {
-      if (task.status === 'pending') {
-        pending.push(task);
-      }
-    }
-    return pending;
+    return this.getTasksByStatus('pending');
   }
 
-  getCompletedTasks() {
-    const allTasks = this.repo.getAllTasks();
-    const completed = [];
-    for (let task of allTasks) {
-      if (task.status === 'completed') {
-        completed.push(task);
-      }
-    }
-    return completed;
+  /**
+   * Obtiene todas las tareas completadas
+   * @returns {Array} Array de tareas completadas
+   */
+  obtenerTareasCompletadas() {
+    return this.getTasksByStatus('completed');
   }
 }
 
