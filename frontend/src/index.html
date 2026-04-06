@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task List</title>
+    <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Task List</h1>
+            <button id="newTaskBtn" class="btn-new">+ New</button>
+        </div>
+
+        <div id="taskForm" class="task-form hidden">
+            <h2>Add Your Task</h2>
+            <input type="text" id="taskTitle" placeholder="Task title" class="input">
+            <textarea id="taskDesc" placeholder="Task description" class="input"></textarea>
+            <div class="form-buttons">
+                <button id="saveTaskBtn" class="btn-save">Save</button>
+                <button id="cancelBtn" class="btn-cancel">Cancel</button>
+            </div>
+        </div>
+
+        <div id="tasksList" class="tasks-container">
+            <!-- Tasks will be loaded here -->
+        </div>
+    </div>
+
+    <script src="./assets/app.js"></script>
+</body>
+</html>
