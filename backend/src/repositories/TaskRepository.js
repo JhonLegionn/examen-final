@@ -52,10 +52,11 @@ class TaskRepository {
   /**
    * Obtiene una tarea por ID usando find
    * @param {string} id - ID de la tarea
-   * @returns {Task|undefined} La tarea o undefined
+   * @returns {Task|null} La tarea o null
    */
   getTaskById(id) {
-    return this.tasks.find(t => t.id === id);
+    const task = this.tasks.find(t => t.id === id);
+    return task || null;
   }
 
   /**

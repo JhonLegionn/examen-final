@@ -6,24 +6,37 @@ const path = require('path');
 
 describe('TaskRepository', () => {
   let taskRepo;
-  const testDataFile = path.join(__dirname, '../../data/tasks.json');
+  const testDataDir = path.join(__dirname, '../../data-test');
+  const testDataFile = path.join(testDataDir, 'tasks.json');
+
+  // Sobreescribir la ruta de datos para tests
+  beforeAll(() => {
+    if (!fs.existsSync(testDataDir)) {
+      fs.mkdirSync(testDataDir, { recursive: true });
+    }
+  });
 
   beforeEach(() => {
     // Limpiar archivo de datos antes de cada test
-    const dir = path.dirname(testDataFile);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
     if (fs.existsSync(testDataFile)) {
       fs.unlinkSync(testDataFile);
     }
     taskRepo = new TaskRepository();
+    taskRepo.dataFile = testDataFile;
+    taskRepo.tasks = [];
   });
 
   afterEach(() => {
     // Limpiar después de cada test
     if (fs.existsSync(testDataFile)) {
       fs.unlinkSync(testDataFile);
+    }
+  });
+
+  afterAll(() => {
+    // Limpiar directorio de tests
+    if (fs.existsSync(testDataDir)) {
+      fs.rmSync(testDataDir, { recursive: true });
     }
   });
 
@@ -84,6 +97,9 @@ describe('TaskRepository', () => {
 
     // Crear nuevo repositorio para verificar persistencia
     const newRepo = new TaskRepository();
+    newRepo.dataFile = testDataFile;
+    newRepo.tasks = newRepo.loadTasks();
+    
     const tasks = newRepo.getAllTasks();
     expect(tasks.length).toBe(1);
     expect(tasks[0].title).toBe('Persistent Task');
